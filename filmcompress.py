@@ -11,7 +11,7 @@ from typing import Iterable
 import click
 from termcolor import colored
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv']
 
 
