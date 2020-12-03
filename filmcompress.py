@@ -11,7 +11,7 @@ from typing import Iterable
 import click
 from termcolor import colored
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv']
 
 
@@ -38,7 +38,7 @@ def search_files(dirpath: str, recursive: bool) -> Iterable[str]:
 @click.command()
 @click.argument('directory', type=click.Path(exists=True))
 @click.option('--recursive', is_flag=True, help='Recursive')
-@click.option('--gpu', help='Use GPU of type. Can be: nvidia, intel, amd')
+@click.option('--gpu', help='Use GPU of type. Can be: nvidia, intel, amd. Defaults to none (recommended).')
 def main(directory, recursive=False, gpu='none'):
     """ Compress h264 video files in a directory using libx265 codec with crf=28
 
@@ -84,16 +84,16 @@ def main(directory, recursive=False, gpu='none'):
                 convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel qsv -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv -acodec copy "{new_fp}"'
                 print(colored('Using Intel hardware acceleration', 'yellow'))
             elif os.name != 'nt' and gpu == 'intel':
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel vaapi -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_vaapi -acodec copy "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -init_hw_device vaapi=decdev:/dev/dri/renderD128 -hwaccel_device /dev/dri/renderD128 -hwaccel vaapi -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_vaapi -acodec copy "{new_fp}"'
                 print(colored('Using Intel hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'amd':
                 convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_amf -acodec copy "{new_fp}"'
                 print(colored('Using AMD hardware acceleration', 'yellow'))
             else:
                 print(colored('Using no hardware acceleration', 'yellow'))
-                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -acodec copy "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -preset slow -acodec copy "{new_fp}"'
 
-            conversion_return_code = run(convert_cmd, shell=(os.name != 'nt')).returncode
+            conversion_return_code = run(convert_cmd, shell=True).returncode
             if conversion_return_code == 0:
                 saved = os.path.getsize(fp) - os.path.getsize(new_fp)
                 total += saved

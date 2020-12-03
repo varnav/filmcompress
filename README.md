@@ -19,6 +19,10 @@ WARNING: This tool is still in beta, and it replaces existing files. Use at your
 
 Supports Windows, Linux, MacOS and probably other OSes.
 
+## About hardware encoding
+
+Hardware encoder is multiple times faster, but software encoding (default) provides better quality and compatibility.
+
 Command-line [FFmpeg](https://ffmpeg.org/) is used for transcoding - you must have it installed in your system.
 
 ## Installation
@@ -36,16 +40,15 @@ Unfortunately antiviruses [don't like packed Python executables](https://github.
 ### PiPy package
 
 ```sh
-filmcompress --encoder nvidia --recursive /home/username/myvideos
+filmcompress --recursive /home/username/myvideos
 ```
 
 ### Windows executable
 
 ```cmd
-./filmcompress.exe --encoder intel "c:\Users\username\Pictures\My Vacation"
+./filmcompress.exe --encoder nvidia "c:\Users\username\Pictures\My Vacation"
 ```
 
 ## See also
 
 * [Handbrake](https://handbrake.fr/)
-
