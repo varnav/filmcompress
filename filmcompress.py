@@ -39,7 +39,7 @@ def search_files(dirpath: str, recursive: bool) -> Iterable[str]:
 @click.argument('directory', type=click.Path(exists=True))
 @click.option('--recursive', is_flag=True, help='Recursive')
 @click.option('--gpu', help='Use GPU of type. Can be: nvidia, intel, amd. Defaults to none (recommended).')
-@click.option('--preset', help='Speed/quality preset. Defaults to slow.')
+@click.option('--preset', help='Speed/quality preset. Defaults to slow.', default='slow')
 def main(directory, recursive=False, gpu='none', preset='slow'):
     """ Compress h264 video files in a directory using libx265 codec with crf=28
 
@@ -75,22 +75,23 @@ def main(directory, recursive=False, gpu='none', preset='slow'):
             new_fp = tempdir + os.sep + 'temp_ffmpeg.mp4'
             if os.name == 'nt' and gpu == 'nvidia':
                 # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel cuda -vsync 0 -i "{fp}" -rc-lookahead 15 -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_nvenc -acodec copy "{new_fp}" '
-                print(colored('Using nVidia hardware acceleration', 'yellow'))
-            elif os.name != 'nt' and gpu == 'nvidia':
-                # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
-                convert_cmd = f'ffmpeg -nostdin -xerror -vsync 0 -i "{fp}" -rc-lookahead 15 -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_nvenc -acodec copy "{new_fp}" '
+                # ffmpeg -h encoder=hevc_nvenc
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -vsync 0 -i "{fp}" -rc-lookahead 15 -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_nvenc -preset {preset} -acodec copy "{new_fp}" '
                 print(colored('Using nVidia hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'intel':
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel qsv -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv -acodec copy "{new_fp}"'
+                # ffmpeg -h encoder=hevc_qsv
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv -preset {preset} -acodec copy "{new_fp}"'
                 print(colored('Using Intel hardware acceleration', 'yellow'))
             elif os.name != 'nt' and gpu == 'intel':
                 # https://wiki.libav.org/Hardware/vaapi
-                convert_cmd = f'ffmpeg -nostdin -xerror -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "{fp}" -an -vf 'format=nv12|vaapi,hwupload' -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_vaapi -acodec copy "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "{fp}" -an -vf "format=nv12|vaapi,hwupload" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_vaapi -acodec copy "{new_fp}"'
                 print(colored('Using Intel hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'amd':
-                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_amf -acodec copy "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_amf -acodec copy "{new_fp}"'
                 print(colored('Using AMD hardware acceleration', 'yellow'))
+            elif gpu == 'auto':
+                print(colored('Using autodetected HW for decode only', 'yellow'))
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -preset {preset} -acodec copy "{new_fp}"'
             else:
                 print(colored('Using no hardware acceleration', 'yellow'))
                 convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -preset {preset} -acodec copy "{new_fp}"'
