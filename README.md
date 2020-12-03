@@ -1,6 +1,6 @@
 # filmcompress
 
-This tool will bulk encode supported videos to HEVC (h.265) format in given directory, with optional recursion and optional hardware acceleration.
+This tool will bulk encode supported videos to HEVC (h.265) format in given directory, with optional recursion and optional hardware acceleration. Primary use is almost lossless compression of short videos from your phone or camera.
 
 WARNING: This tool is still in beta, and it replaces existing files. Use at your own risk.
 

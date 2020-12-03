@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Based on https://geoffruddock.com/bulk-filmcompress-x265-with-ffmpeg/
 
 import os
@@ -48,6 +49,8 @@ def main(directory, recursive=False, gpu='none'):
 
     """
 
+    total = 0
+
     if recursive:
         print('Processing recursively starting from', directory)
         recursive = False
@@ -71,29 +74,38 @@ def main(directory, recursive=False, gpu='none'):
             new_fp = tempdir + os.sep + 'temp_ffmpeg.mp4'
             if os.name == 'nt' and gpu == 'nvidia':
                 # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
-                convert_cmd = f'ffmpeg -nostdin -xerror -vsync 0 -hwaccel cuda -i "{fp}" -rc-lookahead 15 ' \
-                              f'-map_metadata 0 -movflags use_metadata_tags -vcodec hevc_nvenc "{new_fp}" '
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel cuda -vsync 0 -i "{fp}" -rc-lookahead 15 -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_nvenc -acodec copy "{new_fp}" '
+                print(colored('Using nVidia hardware acceleration', 'yellow'))
+            elif os.name != 'nt' and gpu == 'nvidia':
+                # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
+                convert_cmd = f'ffmpeg -nostdin -xerror -vsync 0 -i "{fp}" -rc-lookahead 15 -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_nvenc -acodec copy "{new_fp}" '
                 print(colored('Using nVidia hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'intel':
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel qsv -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel qsv -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv -acodec copy "{new_fp}"'
+                print(colored('Using Intel hardware acceleration', 'yellow'))
+            elif os.name != 'nt' and gpu == 'intel':
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel vaapi -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_vaapi -acodec copy "{new_fp}"'
                 print(colored('Using Intel hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'amd':
-                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_amf "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_amf -acodec copy "{new_fp}"'
                 print(colored('Using AMD hardware acceleration', 'yellow'))
             else:
                 print(colored('Using no hardware acceleration', 'yellow'))
-                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -acodec copy "{new_fp}"'
 
-            conversion_return_code = run(convert_cmd, shell=False).returncode
+            conversion_return_code = run(convert_cmd, shell=(os.name != 'nt')).returncode
             if conversion_return_code == 0:
-                kilobytes = round((os.path.getsize(fp) - os.path.getsize(new_fp)) / 1024)
+                saved = os.path.getsize(fp) - os.path.getsize(new_fp)
+                total += saved
                 os.replace(new_fp, fp)
-                print(colored(fp, 'green'), 'ready, saved', kilobytes, 'KB')
+                print(colored(fp, 'green'), 'ready, saved', round(saved / 1024), 'KB')
             else:
                 os.remove(new_fp)
+                print(colored(fp, 'red'), 'left intact')
             os.removedirs(tempdir)
         else:
             print('Skipping HEVC file', colored(fp, 'yellow'))
+    print('Total saved', round(total / 1024 / 1024), 'MB')
 
 
 if __name__ == '__main__':
