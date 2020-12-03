@@ -11,7 +11,7 @@ from typing import Iterable
 import click
 from termcolor import colored
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv']
 
 
@@ -53,10 +53,10 @@ def main(directory, recursive=False, gpu='none'):
 
     if recursive:
         print('Processing recursively starting from', directory)
-        recursive = False
+        recursive = True
     else:
         print('Processing non-recursively starting from', directory)
-        recursive = True
+        recursive = False
 
     if not os.access(directory, os.W_OK) or not os.path.exists(directory):
         print('No such directory or not writable')
