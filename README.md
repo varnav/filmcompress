@@ -12,6 +12,7 @@ WARNING: This tool is still in beta, and it replaces existing files. Use at your
 * mp4
 * m4a
 * mkv
+* WebM
 * avi
 * 3gp
 

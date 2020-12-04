@@ -12,7 +12,7 @@ import click
 from termcolor import colored
 
 __version__ = '0.1.7'
-SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'avi', '3gp']
+SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'webm', 'avi', '3gp']
 
 
 # Ported from: https://github.com/victordomingos/optimize-images
