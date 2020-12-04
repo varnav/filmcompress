@@ -12,6 +12,8 @@ WARNING: This tool is still in beta, and it replaces existing files. Use at your
 * mp4
 * m4a
 * mkv
+* avi
+* 3gp
 
 ## Supported GPUs
 
@@ -30,7 +32,7 @@ Hardware encoder is multiple times faster, but software encoding (default) provi
 
 Supports experimental av1 encoding with `--av1`. Any `--gpu` settings will be ignored. Encoding is slow (hundreds of
 times slower than GPU HEVC), but will produce ~20% smaller file with same quality. Sound will be transcoded to 96 kbps
-OPUS. Unless you use libaom v2 under Linux (build script included) encoding is extremely slow.
+Opus. Unless you use libaom v2 under Linux (build script included) encoding is extremely slow.
 
 ## About FFmpeg
 
@@ -55,6 +57,9 @@ filmcompress --recursive /home/username/myvideos
 ```
 
 ### Windows executable
+
+You will need [ffmpeg binaries](https://www.gyan.dev/ffmpeg/builds/) in path. It's best to
+extract 3 exe files from [archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z) to %USERPROFILE%\AppData\Local\Microsoft\WindowsApps
 
 ```cmd
 ./filmcompress.exe --encoder nvidia "c:\Users\username\Pictures\My Vacation"

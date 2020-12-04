@@ -11,8 +11,8 @@ from typing import Iterable
 import click
 from termcolor import colored
 
-__version__ = '0.1.6'
-SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'avi']
+__version__ = '0.1.7'
+SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'avi', '3gp']
 
 
 # Ported from: https://github.com/victordomingos/optimize-images
@@ -41,7 +41,8 @@ def search_files(dirpath: str, recursive: bool) -> Iterable[str]:
 @click.option('--av1', is_flag=True, help='Use experimental AV1 instead of HEVC (existing HEVC files will be skipped)')
 @click.option('-g', '--gpu', help='Use GPU of type. Can be: nvidia, intel, amd. Defaults to none (recommended).')
 @click.option('-p', '--preset', help='Speed/quality preset. Defaults to slow.', default='slow')
-def main(directory, recursive=False, gpu='none', preset='slow', av1=False):
+@click.option('--info', is_flag=True, help='Only enumerate codecs. Do not transcode.')
+def main(directory, recursive=False, gpu='none', preset='slow', av1=False, info=False):
     """ Compress h264 video files in a directory using libx265 codec with crf=28
 
     Args:
@@ -71,6 +72,8 @@ def main(directory, recursive=False, gpu='none', preset='slow', av1=False):
                           'default=noprint_wrappers=1:nokey=1 "{fp}" '
         codecs = [check_output(check_codec_cmd.format(fp=fp), shell=True).strip().decode('UTF-8')]
         print(filepath, "has codecs", colored(codecs, 'green'))
+        if info:
+            continue
 
         if not ('hevc' in codecs):
             tempdir = tempfile.mkdtemp()
@@ -78,29 +81,29 @@ def main(directory, recursive=False, gpu='none', preset='slow', av1=False):
             if os.name == 'nt' and gpu == 'nvidia':
                 # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
                 # ffmpeg -h encoder=hevc_nvenc
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -vsync 0 -i "{fp}" -rc-lookahead 15 -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_nvenc -preset {preset} -acodec copy "{new_fp}" '
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -vsync 0 -i "{fp}" -rc-lookahead 15 -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_nvenc -preset {preset} "{new_fp}" '
                 print(colored('Using nVidia hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'intel':
                 # ffmpeg -h encoder=hevc_qsv
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv -preset {preset} -acodec copy "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv -preset {preset} "{new_fp}"'
                 print(colored('Using Intel hardware acceleration', 'yellow'))
             elif os.name != 'nt' and gpu == 'intel':
                 # https://wiki.libav.org/Hardware/vaapi
-                convert_cmd = f'ffmpeg -nostdin -xerror -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "{fp}" -an -vf "format=nv12|vaapi,hwupload" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_vaapi -acodec copy "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "{fp}" -an -vf "format=nv12|vaapi,hwupload" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_vaapi "{new_fp}"'
                 print(colored('Using Intel hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'amd':
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_amf -acodec copy "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_amf "{new_fp}"'
                 print(colored('Using AMD hardware acceleration', 'yellow'))
             elif gpu == 'auto':
                 print(colored('Using autodetected HW for decode only', 'yellow'))
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -preset {preset} -acodec copy "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -preset {preset} "{new_fp}"'
             elif av1:
                 print(colored('Using experimental AV1 encoder', 'yellow'))
                 convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libaom-av1 -strict experimental -acodec libopus "{new_fp}"'
-                #convert_cmd = f'av1an -i {fp} -a "-c:a libopus -b:a  64k" -o {tempdir}{os.sep}tmp && ffmpeg -nostdin -i {tempdir}{os.sep}tmp -codec copy {new_fp}'
+                # convert_cmd = f'av1an -i {fp} -a "-c:a libopus -b:a  64k" -o {tempdir}{os.sep}tmp && ffmpeg -nostdin -i {tempdir}{os.sep}tmp -codec copy {new_fp}'
             else:
                 print(colored('Using no hardware acceleration', 'yellow'))
-                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -preset {preset} -acodec copy "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -preset {preset} "{new_fp}"'
 
             conversion_return_code = run(convert_cmd, shell=True).returncode
             if conversion_return_code == 0:
