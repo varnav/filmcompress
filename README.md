@@ -1,10 +1,12 @@
 # filmcompress
 
-This tool will bulk encode supported videos to HEVC (h.265) format in given directory, with optional recursion and optional hardware acceleration. Primary use is almost lossless compression of short videos from your phone or camera.
+This tool will bulk encode supported videos to HEVC (h.265) format in given directory, with optional recursion
+and optional hardware acceleration. Primary use is almost lossless compression of short videos from your 
+phone or camera. Will do it's best to preserve metadata and quality.
 
 WARNING: This tool is still in beta, and it replaces existing files. Use at your own risk.
 
-## Supported file formats:
+## Supported input file formats:
 
 * mov
 * mp4
@@ -16,12 +18,21 @@ WARNING: This tool is still in beta, and it replaces existing files. Use at your
 * nVidia
 * Intel
 * AMD
+* Autodetect (decode only)
 
 Supports Windows, Linux, MacOS and probably other OSes.
 
 ## About hardware encoding
 
 Hardware encoder is multiple times faster, but software encoding (default) provides better quality and compatibility.
+
+## About AV1
+
+Supports experimental av1 encoding with `--av1`. Any `--gpu` settings will be ignored. Encoding is slow (hundreds of
+times slower than GPU HEVC), but will produce ~20% smaller file with same quality. Sound will be transcoded to 96 kbps
+OPUS. Unless you use libaom v2 under Linux (build script included) encoding is extremely slow.
+
+## About FFmpeg
 
 Command-line [FFmpeg](https://ffmpeg.org/) is used for transcoding - you must have it installed in your system.
 
@@ -52,3 +63,4 @@ filmcompress --recursive /home/username/myvideos
 ## See also
 
 * [Handbrake](https://handbrake.fr/)
+* [Av1an](https://github.com/master-of-zen/Av1an)
