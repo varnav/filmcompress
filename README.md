@@ -2,7 +2,7 @@
 
 This tool will bulk encode supported videos to HEVC (h.265) format in given directory, with optional recursion
 and optional hardware acceleration. Primary use is almost lossless compression of short videos from your 
-phone or camera. Will do it's best to preserve metadata and quality.
+phone or camera. Will do its best to preserve metadata and quality.
 
 WARNING: This tool is still in beta, and it replaces existing files. Use at your own risk.
 
@@ -28,6 +28,7 @@ Supports Windows, Linux, MacOS and probably other OSes.
 ## About hardware encoding
 
 Hardware encoder is multiple times faster, but software encoding (default) provides better quality and compatibility.
+My own testing shows that nVidia 20 series cards and later produce good results, but other cards may lack quality.
 
 ## About AV1
 
@@ -69,4 +70,5 @@ extract 3 exe files from [archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git
 ## See also
 
 * [Handbrake](https://handbrake.fr/)
+* [StaxRip](https://github.com/staxrip/staxrip/)
 * [Av1an](https://github.com/master-of-zen/Av1an)
