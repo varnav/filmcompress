@@ -71,7 +71,7 @@ extract 3 exe files from [archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git
 ./filmcompress.exe --encoder nvidia "c:\Users\username\Pictures\My Vacation"
 ```
 
-## Transcoding quality measurement with [VMAF](https://github.com/Netflix/vmaf)
+## Transcoding quality measurement with [VMAF](https://github.com/Netflix/vmaf/blob/master/resource/doc/ffmpeg.md)
 
 Example for Ubuntu Windows 10:
 

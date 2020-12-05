@@ -12,7 +12,7 @@ import shutil
 import click
 from termcolor import colored
 
-__version__ = '0.2.0'
+__version__ = '0.2.0dev'
 SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'webm', 'avi', '3gp']
 
 
@@ -87,9 +87,9 @@ def main(directory, recursive=False, gpu='none', preset='slow', av1=False, info=
                 print(colored('Using nVidia hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'intel':
                 # ffmpeg -h encoder=hevc_qsv
-                # Has no CRF  mode and produces 1000kbps low quality images on default settings
-                # I set bitrate to 2500 to counter this
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv -b:v 2500k "{new_fp}"'
+                # Has no CRF mode and produces 1000kbps low quality images on default settings
+                # I set bitrate to higher value to counter this
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv -b:v 5M "{new_fp}"'
                 print(colored('Using Intel hardware acceleration', 'yellow'))
             elif os.name != 'nt' and gpu == 'intel':
                 # https://wiki.libav.org/Hardware/vaapi
