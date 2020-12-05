@@ -1,8 +1,8 @@
 # filmcompress
 
 This tool will bulk encode supported videos to HEVC (h.265) format in given directory, with optional recursion
-and optional hardware acceleration. Primary use is almost lossless compression of short videos from your 
-phone or camera. Will do its best to preserve metadata and quality.
+and optional hardware acceleration. Primary use is recompression of multiple short videos from your phone or 
+camera. Will do its best to preserve metadata and quality.
 
 WARNING: This tool is still in beta, and it replaces existing files. Use at your own risk.
 
@@ -23,12 +23,16 @@ WARNING: This tool is still in beta, and it replaces existing files. Use at your
 * AMD
 * Autodetect (decode only)
 
+Hardware support is off by default.
+
 Supports Windows, Linux, MacOS and probably other OSes.
 
 ## About hardware encoding
 
 Hardware encoder is multiple times faster, but software encoding (default) provides better quality and compatibility.
 My own testing shows that nVidia 20 series cards and later produce good results, but other cards may lack quality.
+
+See [benchmarks](benchmarks.md).
 
 ## About AV1
 
@@ -67,8 +71,21 @@ extract 3 exe files from [archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git
 ./filmcompress.exe --encoder nvidia "c:\Users\username\Pictures\My Vacation"
 ```
 
+## Transcoding quality measurement with [VMAF](https://github.com/Netflix/vmaf)
+
+Example for Ubuntu Windows 10:
+
+```
+cd /mnt/c/video_collection
+ffmpeg -i ./transcoded.mkv -i original.mkv -lavfi libvmaf -report -f null -
+```
+
+You need to build VMAF and FFmpeg first. Simply run `build_ffmpeg.sh`.
+
 ## See also
 
 * [Handbrake](https://handbrake.fr/)
 * [StaxRip](https://github.com/staxrip/staxrip/)
 * [Av1an](https://github.com/master-of-zen/Av1an)
+* [NVEnv](https://github.com/rigaya/NVEnc)
+* [MSU Quality Measurement Tool](http://www.compression.ru/video/quality_measure/)

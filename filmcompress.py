@@ -8,10 +8,11 @@ import tempfile
 from subprocess import run, check_output
 from typing import Iterable
 
+import shutil
 import click
 from termcolor import colored
 
-__version__ = '0.1.9'
+__version__ = '0.2.0'
 SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'webm', 'avi', '3gp']
 
 
@@ -74,6 +75,7 @@ def main(directory, recursive=False, gpu='none', preset='slow', av1=False, info=
         if info:
             continue
 
+#        if not ('hevc' in codecs) and not ('x264' in codecs):
         if not ('hevc' in codecs):
             tempdir = tempfile.mkdtemp()
             new_fp = tempdir + os.sep + 'temp_ffmpeg.mp4'
@@ -81,7 +83,7 @@ def main(directory, recursive=False, gpu='none', preset='slow', av1=False, info=
                 # https://slhck.info/video/2017/03/01/rate-control.html
                 # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
                 # ffmpeg -h encoder=hevc_nvenc
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -vsync 0 -i "{fp}" -rc-lookahead 15 -map_metadata 0 -movflags use_metadata_tags -preset p5 -spatial-aq 1 -temporal_aq 1 -vcodec hevc_nvenc "{new_fp}" '
+                convert_cmd = f'ffmpeg -nostdin -xerror -vsync 0 -i "{fp}" -rc-lookahead 25 -map_metadata 0 -movflags use_metadata_tags -cq 22 -preset p6 -spatial-aq 1 -temporal_aq 1 -vcodec hevc_nvenc "{new_fp}" '
                 print(colored('Using nVidia hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'intel':
                 # ffmpeg -h encoder=hevc_qsv
@@ -105,13 +107,13 @@ def main(directory, recursive=False, gpu='none', preset='slow', av1=False, info=
                 # convert_cmd = f'av1an -i {fp} -a "-c:a libopus -b:a  64k" -o {tempdir}{os.sep}tmp && ffmpeg -nostdin -i {tempdir}{os.sep}tmp -codec copy {new_fp}'
             else:
                 print(colored('Using no hardware acceleration', 'yellow'))
-                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -crf 22 -preset {preset} "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -crf 20 -preset slow "{new_fp}"'
 
             conversion_return_code = run(convert_cmd, shell=True).returncode
             if conversion_return_code == 0:
                 saved = os.path.getsize(fp) - os.path.getsize(new_fp)
                 total += saved
-                os.replace(new_fp, fp)
+                shutil.move(new_fp, fp)
                 print(colored(fp, 'green'), 'ready, saved', round(saved / 1024), 'KB')
             else:
                 os.remove(new_fp)
