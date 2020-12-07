@@ -1,4 +1,6 @@
-# System configuration
+## HEVC hardware vs software encoding comparison
+
+## System configuration
 
 CPU: Intel Core i7 10750H  
 GPU 1: Intel UHD Comet Lake GT2  
@@ -27,7 +29,7 @@ h264 (High) (avc1 / 0x31637661), yuv420p, 1920x800 [SAR 1:1 DAR 12:5], 7862 kb/s
 
 ```
 ./build.ffmpeg.sh
-ffmpeg -i result.mkv -i ToS-4k-1920.mov.mkv -lavfi libvmaf -report -f null -
+ffmpeg -i result.mkv -i ToS-4k-1920.mov.mkv -lavfi libvmaf="model_path=/usr/local/share/model/vmaf_v0.6.1.pkl" -report -f null -
 ```
 
 ### Software
@@ -76,7 +78,10 @@ ffmpeg -i output.mov -i tearsofsteel_4k.mov -lavfi libvmaf=model_path=/usr/local
 
 `ffmpeg -xerror -i tearsofsteel_4k.mov -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -crf 20 -preset slow -acodec copy tos_cpu_4k.mp4`
 
-TBA
+encoded 17616 frames in 10456.22s (1.68 fps), 24366.01 kb/s, Avg QP:23.56
+
+File size: 2.09 GB
+VMAF score: 98.952571
 
 ### nVidia
 
@@ -91,6 +96,10 @@ VMAF score: 97.851470
 I understand - this is a very limited benchmark. But in my case NVENC produced slightly larger file with slightly better quality (basically, quality equal to software encoding), while transcoding was 12x faster.
 Most likely pre-Turing cards will produce worse quality results.  
 Intel hardware encoder also performed well.
+
+## What if I don't trust VMAF
+
+[Screenshots](https://drive.google.com/file/d/1ZCV2Xb9p15uqP4OTYMBnUWRGf1Ah_XEM/view?usp=sharing) - can you tell the difference? Please mail me. I will publish what's what later.
 
 ## See also
 

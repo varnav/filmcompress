@@ -79,35 +79,36 @@ def main(directory, recursive=False, gpu='none', preset='slow', av1=False, info=
         if not ('hevc' in codecs):
             tempdir = tempfile.mkdtemp()
             new_fp = tempdir + os.sep + 'temp_ffmpeg.mp4'
+            audio_opts = '-b:a 64k'
             if os.name == 'nt' and gpu == 'nvidia':
                 # https://slhck.info/video/2017/03/01/rate-control.html
                 # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
                 # ffmpeg -h encoder=hevc_nvenc
-                convert_cmd = f'ffmpeg -nostdin -xerror -vsync 0 -i "{fp}" -rc-lookahead 25 -map_metadata 0 -movflags use_metadata_tags -cq 22 -preset p6 -spatial-aq 1 -temporal_aq 1 -vcodec hevc_nvenc "{new_fp}" '
+                convert_cmd = f'ffmpeg -nostdin -xerror -vsync 0 -i "{fp}" -rc-lookahead 25 -map_metadata 0 -movflags use_metadata_tags -cq 22 -preset p6 -spatial-aq 1 -temporal_aq 1 -vcodec hevc_nvenc {audio_opts} "{new_fp}" '
                 print(colored('Using nVidia hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'intel':
                 # ffmpeg -h encoder=hevc_qsv
                 # Has no CRF mode and produces 1000kbps low quality images on default settings
                 # I set bitrate to higher value to counter this
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv -b:v 5M "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_qsv -b:v 5M {audio_opts} "{new_fp}"'
                 print(colored('Using Intel hardware acceleration', 'yellow'))
             elif os.name != 'nt' and gpu == 'intel':
                 # https://wiki.libav.org/Hardware/vaapi
-                convert_cmd = f'ffmpeg -nostdin -xerror -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "{fp}" -an -vf "format=nv12|vaapi,hwupload" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_vaapi "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "{fp}" -an -vf "format=nv12|vaapi,hwupload" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_vaapi {audio_opts} "{new_fp}"'
                 print(colored('Using Intel hardware acceleration', 'yellow'))
             elif os.name == 'nt' and gpu == 'amd':
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_amf "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec hevc_amf {audio_opts} "{new_fp}"'
                 print(colored('Using AMD hardware acceleration', 'yellow'))
             elif gpu == 'auto':
                 print(colored('Using autodetected HW for decode only', 'yellow'))
-                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -preset slow "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -hwaccel auto -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -preset slow {audio_opts} "{new_fp}"'
             elif av1:
                 print(colored('Using experimental AV1 encoder', 'yellow'))
-                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libaom-av1 -strict experimental -acodec libopus "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libaom-av1 -strict experimental -acodec libopus {audio_opts} "{new_fp}"'
                 # convert_cmd = f'av1an -i {fp} -a "-c:a libopus -b:a  64k" -o {tempdir}{os.sep}tmp && ffmpeg -nostdin -i {tempdir}{os.sep}tmp -codec copy {new_fp}'
             else:
                 print(colored('Using no hardware acceleration', 'yellow'))
-                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -crf 20 -preset slow "{new_fp}"'
+                convert_cmd = f'ffmpeg -nostdin -xerror -i "{fp}" -map_metadata 0 -movflags use_metadata_tags -vcodec libx265 -crf 20 -preset slow {audio_opts} "{new_fp}"'
 
             conversion_return_code = run(convert_cmd, shell=True).returncode
             if conversion_return_code == 0:
