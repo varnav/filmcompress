@@ -12,7 +12,7 @@ import shutil
 import click
 from termcolor import colored
 
-__version__ = '0.2.0dev'
+__version__ = '0.2.0'
 SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'webm', 'avi', '3gp']
 
 
