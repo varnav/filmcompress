@@ -44,36 +44,32 @@ Opus. Unless you use libaom v2 under Linux (build script included) encoding is e
 
 Command-line [FFmpeg](https://ffmpeg.org/) is used for transcoding - you must have it installed in your system.
 
-## Installation
+## Linux
 
 ```sh
 pip install filmcompress
+filmcompress --recursive /home/username/myvideos
 ```
+
+### Windows
 
 You can download and use it as single Windows binary, see [Releases](https://github.com/varnav/filmcompress/releases/)
 
 Unfortunately antiviruses [don't like packed Python executables](https://github.com/pyinstaller/pyinstaller/issues?q=is%3Aissue+virus), so expect false positives from them if you go this way. Best way is pip.
 
-## Usage examples
-
-### PiPy package
-
-```sh
-filmcompress --recursive /home/username/myvideos
-```
-
-### Windows executable
-
 You will need [ffmpeg binaries](https://www.gyan.dev/ffmpeg/builds/) in path. It's best to
 extract 3 exe files from [archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z) to %USERPROFILE%\AppData\Local\Microsoft\WindowsApps
+Example with nVidia hardware encoding:
 
 ```cmd
-./filmcompress.exe --encoder nvidia "c:\Users\username\Pictures\My Vacation"
+./filmcompress.exe --encoder nvidia "c:\\Users\\username\\Pictures\\My Vacation"
 ```
+
+Remember, you need double slashes in Windows.
 
 ## Transcoding quality measurement with [VMAF](https://github.com/Netflix/vmaf/blob/master/resource/doc/ffmpeg.md)
 
-Example for Ubuntu Windows 10:
+Example for WSL2 Ubuntu on Windows 10:
 
 ```
 cd /mnt/c/video_collection
@@ -88,4 +84,4 @@ You need to build VMAF and FFmpeg first. Simply run `build_ffmpeg.sh`.
 * [StaxRip](https://github.com/staxrip/staxrip/)
 * [Av1an](https://github.com/master-of-zen/Av1an)
 * [NVEnv](https://github.com/rigaya/NVEnc)
-* [MSU Quality Measurement Tool](http://www.compression.ru/video/quality_measure/)
+* [media-autobuild_suite](https://github.com/m-ab-s/media-autobuild_suite)
