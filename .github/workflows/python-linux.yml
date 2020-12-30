@@ -27,6 +27,8 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install setuptools wheel twine flake8 pytest Pillow
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg
 
     - name: Lint with flake8
       run: |
