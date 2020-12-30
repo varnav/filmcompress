@@ -1,6 +1,5 @@
 import os
 
-from PIL import Image
 import tempfile
 from click.testing import CliRunner
 import requests
