@@ -1,8 +1,8 @@
 # filmcompress
 
-This tool will bulk encode supported videos to HEVC (h.265) format in given directory, with optional recursion
+This tool will bulk encode supported videos to HEVC (h.265) or AV1 format in given directory, with optional recursion
 and optional hardware acceleration. Primary use is recompression of multiple short videos from your phone or 
-camera. Will do its best to preserve metadata and quality.
+camera, defaults are tuned for this task. Will do its best to preserve metadata and quality.
 
 WARNING: This tool is still in beta, and it replaces existing files. Use at your own risk.
 
@@ -25,7 +25,7 @@ WARNING: This tool is still in beta, and it replaces existing files. Use at your
 
 Hardware support is off by default.
 
-Supports Windows, Linux, MacOS and probably other OSes.
+Supports Windows, Linux, macOS and probably other OSes.
 
 ## About hardware encoding
 
@@ -36,9 +36,9 @@ See [benchmarks](benchmarks.md).
 
 ## About AV1
 
-Supports experimental av1 encoding with `--av1`. Any `--gpu` settings will be ignored. Encoding is slow (hundreds of
+Supports experimental av1 encoding with `--av1`. Any `--gpu` setting will be ignored. Encoding is slow (hundreds of
 times slower than GPU HEVC), but will produce ~20% smaller file with same quality. Sound will be transcoded to 96 kbps
-Opus. Unless you use libaom v2 under Linux (build script included) encoding is extremely slow.
+Opus.
 
 ## About FFmpeg
 
@@ -76,8 +76,6 @@ cd /mnt/c/video_collection
 ffmpeg -i ./transcoded.mkv -i original.mkv -lavfi libvmaf -report -f null -
 ```
 
-You need to build VMAF and FFmpeg first. Simply run `build_ffmpeg.sh`.
-
 ## See also
 
 * [Handbrake](https://handbrake.fr/)
@@ -85,3 +83,4 @@ You need to build VMAF and FFmpeg first. Simply run `build_ffmpeg.sh`.
 * [Av1an](https://github.com/master-of-zen/Av1an)
 * [NVEnv](https://github.com/rigaya/NVEnc)
 * [media-autobuild_suite](https://github.com/m-ab-s/media-autobuild_suite)
+* [webm.py](https://github.com/Kagami/webm.py)
