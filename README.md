@@ -84,3 +84,4 @@ ffmpeg -i ./transcoded.mkv -i original.mkv -lavfi libvmaf -report -f null -
 * [NVEnv](https://github.com/rigaya/NVEnc)
 * [media-autobuild_suite](https://github.com/m-ab-s/media-autobuild_suite)
 * [webm.py](https://github.com/Kagami/webm.py)
+* List of AV1 tools [here](https://nwgat.ninja/test-driving-aomedias-av1-codec/)
