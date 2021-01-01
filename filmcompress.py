@@ -41,10 +41,9 @@ def search_files(dirpath: str, recursive: bool) -> Iterable[str]:
 @click.option('-o', '--outdir', type=click.Path(writable=True))
 @click.option('-r', '--recursive', is_flag=True, help='Recursive')
 @click.option('--av1', help='AV1 codec (experimental)', type=click.Choice(['aom', 'svt', 'rav1e'], case_sensitive=False), default='aom')
-# @click.option('--av1an', is_flag=True, help='Use Av1an for AV1 encoding (experimental)')
 @click.option('-g', '--gpu', type=click.Choice(['nvidia', 'intel', 'amd'], case_sensitive=False), help='Use GPU of type. Can be: nvidia, intel, amd. Defaults to none (recommended).')
 @click.option('-i', '--info', is_flag=True, help='Only enumerate codecs. Do not transcode.')
-def main(indir, outdir, recursive=False, gpu='none', av1='aom', info=False, av1an=False):
+def main(indir, outdir, recursive=False, gpu='none', av1='aom', info=False):
     """ Compress h264 video files in a directory using libx265 codec with crf=28
 
          indir: the directory to scan for video files
@@ -53,7 +52,6 @@ def main(indir, outdir, recursive=False, gpu='none', av1='aom', info=False, av1a
          gpu: type of hardware encoder
          av1: use experimetal av1 encoder
          info: only list codecs
-         av1an: Use Av1an for AV1 encoding (experimental)'
 
     """
 

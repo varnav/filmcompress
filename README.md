@@ -58,7 +58,6 @@ Unfortunately antiviruses [don't like packed Python executables](https://github.
 
 You will need [ffmpeg binaries](https://www.gyan.dev/ffmpeg/builds/) in path. It's best to
 extract 3 exe files from [archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z) to %USERPROFILE%\AppData\Local\Microsoft\WindowsApps
-For av1an you will need [aomenc](https://ci.appveyor.com/project/marcomsousa/build-aom/build/artifacts)
 Example with nVidia hardware encoding:
 
 ```cmd
