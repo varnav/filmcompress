@@ -4,6 +4,8 @@ This tool will bulk encode supported videos to HEVC (h.265) or AV1 format in giv
 and optional hardware acceleration. Primary use is recompression of multiple short videos from your phone or 
 camera, defaults are tuned for this task. Will do its best to preserve metadata and quality.
 
+Sound will be transcoded to 64K Opus.
+
 
 ## Supported input file formats:
 
@@ -35,8 +37,7 @@ See [benchmarks](benchmarks.md).
 ## About AV1
 
 Supports experimental av1 encoding with `--av1`. Any `--gpu` setting will be ignored. Encoding is slow (hundreds of
-times slower than GPU HEVC), but will produce ~20% smaller file with same quality. Sound will be transcoded to 96 kbps
-Opus.
+times slower than GPU HEVC), but will produce ~20% smaller file with same quality.
 
 ## About FFmpeg
 

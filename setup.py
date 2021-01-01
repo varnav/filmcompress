@@ -12,7 +12,9 @@ with open("README.md", "r") as fh:
 
 install_requires = [
     'click>=7.1.2',
-    'termcolor>=1.1.0'
+    'termcolor>=1.1.0',
+    'pretty-errors>=1.2.19',
+    'ffmpeg-python>=0.2.0'
 ]
 
 setuptools.setup(
@@ -41,7 +43,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3 :: Only",
     ],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     entry_points={
         "console_scripts": [
             "filmcompress = filmcompress:main",
