@@ -20,7 +20,7 @@ setuptools.setup(
     version=filmcompress.__version__,
     author="Evgeny Varnavskiy",
     author_email="varnavruz@gmail.com",
-    description="This tool will bulk encode supported videos to HEVC (h.265) format in given directory, with optional recursion and optional hardware acceleration.",
+    description="This tool will bulk encode supported videos to HEVC (h.265) or AV1 format in given directory, with optional recursion and optional hardware acceleration.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/varnav/filmcompress",

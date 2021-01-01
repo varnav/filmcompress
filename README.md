@@ -4,7 +4,6 @@ This tool will bulk encode supported videos to HEVC (h.265) or AV1 format in giv
 and optional hardware acceleration. Primary use is recompression of multiple short videos from your phone or 
 camera, defaults are tuned for this task. Will do its best to preserve metadata and quality.
 
-WARNING: This tool is still in beta, and it replaces existing files. Use at your own risk.
 
 ## Supported input file formats:
 
@@ -21,7 +20,6 @@ WARNING: This tool is still in beta, and it replaces existing files. Use at your
 * nVidia
 * Intel
 * AMD
-* Autodetect (decode only)
 
 Hardware support is off by default.
 
@@ -48,7 +46,7 @@ Command-line [FFmpeg](https://ffmpeg.org/) is used for transcoding - you must ha
 
 ```sh
 pip install filmcompress
-filmcompress --recursive /home/username/myvideos
+filmcompress --recursive /home/username/myvideos -o /home/username/myvideos/compressed
 ```
 
 ### Windows
@@ -59,27 +57,26 @@ Unfortunately antiviruses [don't like packed Python executables](https://github.
 
 You will need [ffmpeg binaries](https://www.gyan.dev/ffmpeg/builds/) in path. It's best to
 extract 3 exe files from [archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z) to %USERPROFILE%\AppData\Local\Microsoft\WindowsApps
+For av1an you will need [aomenc](https://ci.appveyor.com/project/marcomsousa/build-aom/build/artifacts)
 Example with nVidia hardware encoding:
 
 ```cmd
-./filmcompress.exe --encoder nvidia "c:\\Users\\username\\Pictures\\My Vacation"
+./filmcompress.exe --encoder nvidia "c:\\Users\\username\\Pictures\\My Vacation" -o "c:\\Users\\username\\Pictures\\My Vacation\\compressed"
 ```
 
 Remember, you need double slashes in Windows.
 
-## Transcoding quality measurement with [VMAF](https://github.com/Netflix/vmaf/blob/master/resource/doc/ffmpeg.md)
+## Todo
 
-Example for WSL2 Ubuntu on Windows 10:
-
-```
-cd /mnt/c/video_collection
-ffmpeg -i ./transcoded.mkv -i original.mkv -lavfi libvmaf -report -f null -
-```
+* Output format customization
 
 ## See also
 
-* [Handbrake](https://handbrake.fr/)
-* [StaxRip](https://github.com/staxrip/staxrip/)
+* [Fastflix](https://github.com/cdgriffith/FastFlix) - Cross platform transcoding GUI
+* [Videomass](https://pypi.org/project/videomass/) - Cross platform transcoding GUI
+* [Unmanic](https://github.com/Josh5/unmanic) - Linux mass trancoder
+* [Handbrake](https://handbrake.fr/) - Windows transcoding GUI
+* [StaxRip](https://github.com/staxrip/staxrip/) - Windows transcoding GUI
 * [Av1an](https://github.com/master-of-zen/Av1an)
 * [NVEnv](https://github.com/rigaya/NVEnc)
 * [media-autobuild_suite](https://github.com/m-ab-s/media-autobuild_suite)
