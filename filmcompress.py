@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # Based on https://geoffruddock.com/bulk-filmcompress-x265-with-ffmpeg/
 
-import pretty_errors
 import os
 import pathlib
 import sys
@@ -11,7 +10,7 @@ from termcolor import colored
 # pip install ffmpeg-python
 import ffmpeg
 
-__version__ = '0.4.1'
+__version__ = '0.4.2'
 SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'webm', 'avi', '3gp']
 SKIPPED_FORMATS = ['hevc', 'av1']
 
@@ -39,11 +38,12 @@ def search_files(dirpath: str, recursive: bool) -> Iterable[str]:
 @click.command()
 @click.argument('indir', type=click.Path())
 @click.option('-o', '--outdir', type=click.Path(writable=True))
+@click.option('-f', '--oformat', help="Output file format, mp4 is default", default='mp4')
 @click.option('-r', '--recursive', is_flag=True, help='Recursive')
 @click.option('--av1', help='AV1 codec (experimental)', type=click.Choice(['aom', 'svt', 'rav1e'], case_sensitive=False), default='aom')
 @click.option('-g', '--gpu', type=click.Choice(['nvidia', 'intel', 'amd'], case_sensitive=False), help='Use GPU of type. Can be: nvidia, intel, amd. Defaults to none (recommended).')
 @click.option('-i', '--info', is_flag=True, help='Only enumerate codecs. Do not transcode.')
-def main(indir, outdir, recursive=False, gpu='none', av1='aom', info=False):
+def main(indir, outdir, oformat='mp4', recursive=False, gpu='none', av1='aom', info=False):
     """ Compress h264 video files in a directory using libx265 codec with crf=28
 
          indir: the directory to scan for video files
@@ -80,7 +80,7 @@ def main(indir, outdir, recursive=False, gpu='none', av1='aom', info=False):
             sys.exit(1)
         codec = video_stream['codec_name']
         print(str(fp), "has codec", colored(codec, 'green'))
-        new_fp = outdir.joinpath(fp.name)
+        new_fp = outdir.joinpath(fp.with_suffix('.' + oformat).name)
         if info:
             continue
         if codec in SKIPPED_FORMATS:
@@ -90,11 +90,11 @@ def main(indir, outdir, recursive=False, gpu='none', av1='aom', info=False):
             # https://slhck.info/video/2017/03/01/rate-control.html
             # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
             # ffmpeg -h encoder=hevc_nvenc
-            print(ffmpeg.input(fp).output(str(new_fp), vsync=0, acodec='libopus', ab='64k', vcodec='hevc_nvenc', **{'rc-lookahead': 25}, map_metadata=0, movflags='use_metadata_tags', cq=22, preset='p6', spatial_aq=1, temporal_aq=1).run())
+            print(ffmpeg.input(fp).output(str(new_fp), vsync=0, acodec='copy', map=0, vcodec='hevc_nvenc', **{'rc-lookahead': 25}, map_metadata=0, movflags='use_metadata_tags', preset='p5', spatial_aq=1, temporal_aq=1).run())
             print(colored('Encoding with nVidia hardware acceleration', 'yellow'))
         elif os.name == 'nt' and gpu == 'intel':
             # ffmpeg -h encoder=hevc_qsv
-            print(ffmpeg.input(fp).output(str(new_fp), acodec='libopus', ab='64k', vcodec='hevc_qsv', map_metadata=0, movflags='use_metadata_tags', **{'b:v': '3M'}, preset='slow').run())
+            print(ffmpeg.input(fp).output(str(new_fp), acodec='copy', map=0, vcodec='hevc_qsv', map_metadata=0, movflags='use_metadata_tags', **{'b:v': '3M'}, preset='slow').run())
         elif av1:
             # ffmpeg -h encoder=libaom-av1
             print(colored('Encoding with experimental AV1 encoder', 'yellow'))
