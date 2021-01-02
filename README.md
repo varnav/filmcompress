@@ -24,6 +24,12 @@ Hardware support is off by default.
 
 Supports Windows, Linux, macOS and probably other OSes.
 
+## Roku mode
+
+Made for fast recoding videos for Roku (and probably other smart TVs). 
+Encode to .mkv using NVENC HEVC. Subtitles  will be saved as embedded SRT. Audio will be transcoded to Stereo 96K Opus.
+This will allow sound track and subtitle selection, and reduce file size.
+
 ## About hardware encoding
 
 Hardware encoder is multiple times faster, but software encoding (default) provides better quality and compatibility.
@@ -34,7 +40,7 @@ See [benchmarks](benchmarks.md).
 ## About AV1
 
 Supports experimental av1 encoding with `--av1`. Any `--gpu` setting will be ignored. Encoding is slow (hundreds of
-times slower than GPU HEVC), but will produce ~20% smaller file with same quality. Sound will be transcoded to 64K Opus with this option.
+times slower than GPU HEVC), but will produce ~20% smaller file with same quality. Sound will be transcoded to 96K Opus with this option.
 
 ## About FFmpeg
 

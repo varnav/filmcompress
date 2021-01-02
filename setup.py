@@ -13,7 +13,6 @@ with open("README.md", "r") as fh:
 install_requires = [
     'click>=7.1.2',
     'termcolor>=1.1.0',
-    'pretty-errors>=1.2.19',
     'ffmpeg-python>=0.2.0'
 ]
 
@@ -26,7 +25,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/varnav/filmcompress",
-    keywords=["hevc", "video", "transcoder", "h265"],
+    keywords=["hevc", "video", "transcoder", "h265", "roku"],
     packages=setuptools.find_packages(),
     install_requires=install_requires,
     classifiers=[
