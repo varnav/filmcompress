@@ -70,13 +70,14 @@ def main(indir, outdir, oformat='mp4', include='*', recursive=False, gpu='none',
 
     for fp in search_files(str(indir), recursive=recursive):
         fp = pathlib.PurePath(fp)
-        if fnmatch.fnmatch(fp, include):
-            assert os.path.exists(fp)
-            try:
-                probe = ffmpeg.probe(fp)
-            except ffmpeg.Error as e:
-                print(e.stderr, file=sys.stderr)
-                sys.exit(1)
+        if not fnmatch.fnmatch(fp, include):
+            continue
+        assert os.path.exists(fp)
+        try:
+            probe = ffmpeg.probe(fp)
+        except ffmpeg.Error as e:
+            print(e.stderr, file=sys.stderr)
+            sys.exit(1)
 
         video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
         if video_stream is None:

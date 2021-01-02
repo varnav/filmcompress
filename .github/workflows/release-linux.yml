@@ -31,7 +31,7 @@ jobs:
 
     - name: Lint with flake8
       run:  |
-        flake8 . --count --max-line-length=300 --statistics
+        flake8 . --count --max-line-length=500 --statistics
 
     - name: Build package
       run: python setup.py sdist bdist_wheel
