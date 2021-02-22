@@ -64,8 +64,9 @@ You can download and use it as single Windows binary, see [Releases](https://git
 Unfortunately antiviruses [don't like packed Python executables](https://github.com/pyinstaller/pyinstaller/issues?q=is%3Aissue+virus), so expect false positives from them if you go this way. Best way is pip.
 
 You will need [ffmpeg binaries](https://www.gyan.dev/ffmpeg/builds/) in path. It's best to
-extract 3 exe files from [archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z) to %USERPROFILE%\AppData\Local\Microsoft\WindowsApps
-Example with nVidia hardware encoding:
+extract 3 exe files from [archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z) to `%USERPROFILE%\AppData\Local\Microsoft\WindowsApps`
+
+Example use with nVidia hardware encoding:
 
 ```cmd
 ./filmcompress.exe --gpu nvidia "c:\\Users\\username\\Pictures\\My Vacation" "c:\\Users\\username\\Pictures\\My Vacation\\compressed"
@@ -73,9 +74,6 @@ Example with nVidia hardware encoding:
 
 Remember, you need double slashes in Windows.
 
-## Todo
-
-* Output format customization
 
 ## See also
 
