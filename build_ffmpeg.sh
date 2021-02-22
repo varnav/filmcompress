@@ -14,8 +14,8 @@ set -ex
 
 export DEBIAN_FRONTEND=noninteractive
 
-export  RUSTFLAGS="-C target-feature=+avx2,+fma"
-export  CFLAGS="-march=native -mavx2 -mfma -ftree-vectorize -pipe"
+export RUSTFLAGS="-C target-feature=+avx2,+fma"
+export CFLAGS="-march=native -mavx2 -mfma -ftree-vectorize -pipe"
 
 sudo apt-get -y install libass-dev libfreetype6-dev libgnutls28-dev libsdl2-dev libtool python3-pip nasm cmake
 sudo apt-get -y install libvdpau-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev libunistring-dev

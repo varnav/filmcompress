@@ -24,11 +24,15 @@ Hardware support is off by default.
 
 Supports Windows, Linux, macOS and probably other OSes.
 
-## Roku mode
+## About Roku mode
 
-Made for fast recoding videos for Roku (and probably other smart TVs). 
-Encode to .mkv using NVENC HEVC. Subtitles  will be saved as embedded SRT. Audio will be transcoded to Stereo 96K Opus.
-This will allow sound track and subtitle selection, and reduce file size.
+Made for fast reformatting videos for compatibility with [Roku](https://www.roku.com/) (and probably other smart TVs). 
+
+* Container is mkv
+* Subtitles saved as embedded SRT
+* Audio is downmixed to stereo, normalized and transcoded to Opus 96k
+
+This will allow soundtrack and subtitle selection, and reduces problems with sound quality.
 
 ## About hardware encoding
 
@@ -64,7 +68,7 @@ extract 3 exe files from [archive](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git
 Example with nVidia hardware encoding:
 
 ```cmd
-./filmcompress.exe --encoder nvidia "c:\\Users\\username\\Pictures\\My Vacation" -o "c:\\Users\\username\\Pictures\\My Vacation\\compressed"
+./filmcompress.exe --gpu nvidia "c:\\Users\\username\\Pictures\\My Vacation" "c:\\Users\\username\\Pictures\\My Vacation\\compressed"
 ```
 
 Remember, you need double slashes in Windows.
@@ -75,6 +79,7 @@ Remember, you need double slashes in Windows.
 
 ## See also
 
+* [Encoding UHD 4K HDR10 videos with FFmpeg](https://codecalamity.com/encoding-uhd-4k-hdr10-videos-with-ffmpeg/)
 * [Fastflix](https://github.com/cdgriffith/FastFlix) - Cross platform transcoding GUI
 * [Videomass](https://pypi.org/project/videomass/) - Cross platform transcoding GUI
 * [Unmanic](https://github.com/Josh5/unmanic) - Linux mass trancoder
@@ -83,5 +88,4 @@ Remember, you need double slashes in Windows.
 * [Av1an](https://github.com/master-of-zen/Av1an)
 * [NVEnv](https://github.com/rigaya/NVEnc)
 * [media-autobuild_suite](https://github.com/m-ab-s/media-autobuild_suite)
-* [webm.py](https://github.com/Kagami/webm.py)
 * List of AV1 tools [here](https://nwgat.ninja/test-driving-aomedias-av1-codec/)
