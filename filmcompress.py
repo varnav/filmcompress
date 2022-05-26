@@ -12,7 +12,7 @@ from termcolor import colored
 # pip install ffmpeg-python
 import ffmpeg
 
-__version__ = '0.5'
+__version__ = '0.5.1'
 SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'webm', 'avi', '3gp']
 SKIPPED_CODECS = ['hevc', 'av1']
 
@@ -40,16 +40,17 @@ def search_files(dirpath: str, recursive: bool) -> Iterable[str]:
 
 
 @click.command()
-@click.argument('indir', type=click.Path())
+@click.argument('indir', type=click.Path(exists=True))
 @click.argument('outdir', type=click.Path(exists=True, writable=True), required=False)
 @click.option('--roku', is_flag=True, help="Prepare file for Roku player")
 @click.option('-f', '--oformat', help="Output file format, mp4 is default", default='mp4')
 @click.option('-r', '--recursive', is_flag=True, help='Recursive')
+@click.option('-o', '--overwrite', is_flag=True, help='Overwrite old file with optimized file')
 @click.option('--av1', help='AV1 codec (experimental)', type=click.Choice(['aom', 'svt', 'rav1e'], case_sensitive=False))
 @click.option('-g', '--gpu', type=click.Choice(['nvidia', 'intel', 'amd', 'none'], case_sensitive=False), help='Use GPU of type. Can be: nvidia, intel, amd. Defaults to none (recommended).')
 @click.option('-i', '--include', default='*')
 @click.option('-n', '--notranscode', is_flag=True, help='Skip any transcoding, good with Roku mode')
-def main(indir, av1, outdir=None, oformat='mp4', include='*', recursive=False, gpu='none', roku=False, notranscode=False):
+def main(indir, av1, outdir=None, oformat='mp4', include='*', recursive=False, overwrite=False, gpu='none', roku=False, notranscode=False):
     """ Compress h264 video files in a directory using libx265 codec
 
          indir: the directory to scan for video files
@@ -126,7 +127,7 @@ def main(indir, av1, outdir=None, oformat='mp4', include='*', recursive=False, g
                 # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
                 # ffmpeg -h encoder=hevc_nvenc
                 #print(ffmpeg.input(fp).output(str(new_fp), acodec='copy', map=0, vcodec='hevc_nvenc', **{'rc-lookahead': 25}, map_metadata=0, movflags='use_metadata_tags', preset='p6', spatial_aq=1, temporal_aq=1).run())
-                print(ffmpeg.input(fp).output(str(new_fp), vcodec='hevc_nvenc', **{'rc-lookahead': 25}, movflags='use_metadata_tags', preset='p6', spatial_aq=1, temporal_aq=1).run())
+                print(ffmpeg.input(fp).output(str(new_fp), vcodec='hevc_nvenc', **{'rc-lookahead': 25}, map_metadata=0, movflags='use_metadata_tags', preset='p6', spatial_aq=1, temporal_aq=1).run())
             elif av1:
                 # ffmpeg -h encoder=libaom-av1
                 print(colored('Encoding with experimental AV1 encoder', 'yellow'))
@@ -145,11 +146,14 @@ def main(indir, av1, outdir=None, oformat='mp4', include='*', recursive=False, g
                 # ffmpeg -h encoder=libx265
                 print(ffmpeg.input(fp).output(str(new_fp), acodec='libopus', ab='64k', vcodec='libx265', crf=22, preset='slow', map_metadata=0, movflags='use_metadata_tags').run())
             saved = os.path.getsize(fp) - os.path.getsize(new_fp)
-            #assert saved > 0
             if saved <= 0:
                 print('Copying', fp, 'over', new_fp, 'because it is smaller')
                 shutil.copy2(fp, new_fp)
-            total += saved
+            else:
+                if overwrite:
+                    print('Moving', new_fp, 'over', fp, 'because overwrite mode is on')
+                    shutil.move(new_fp, fp)
+                total += saved
             print(colored(new_fp, 'green'), 'ready, saved', round(saved / 1024), 'KB')
         print('Total saved', round(total / 1024 / 1024), 'MB')
 
