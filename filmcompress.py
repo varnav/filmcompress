@@ -3,6 +3,7 @@
 import fnmatch
 import os
 import pathlib
+import shutil
 from subprocess import run
 import sys
 from typing import Iterable
@@ -11,7 +12,7 @@ from termcolor import colored
 # pip install ffmpeg-python
 import ffmpeg
 
-__version__ = '0.4.4'
+__version__ = '0.5'
 SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'webm', 'avi', '3gp']
 SKIPPED_CODECS = ['hevc', 'av1']
 
@@ -124,7 +125,8 @@ def main(indir, av1, outdir=None, oformat='mp4', include='*', recursive=False, g
                 # https://slhck.info/video/2017/03/01/rate-control.html
                 # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
                 # ffmpeg -h encoder=hevc_nvenc
-                ffmpeg.input(fp).output(str(new_fp), vsync=0, acodec='copy', map=0, vcodec='hevc_nvenc', **{'rc-lookahead': 25}, map_metadata=0, movflags='use_metadata_tags', preset='p6', spatial_aq=1, temporal_aq=1).run()
+                #print(ffmpeg.input(fp).output(str(new_fp), acodec='copy', map=0, vcodec='hevc_nvenc', **{'rc-lookahead': 25}, map_metadata=0, movflags='use_metadata_tags', preset='p6', spatial_aq=1, temporal_aq=1).run())
+                print(ffmpeg.input(fp).output(str(new_fp), vcodec='hevc_nvenc', **{'rc-lookahead': 25}, movflags='use_metadata_tags', preset='p6', spatial_aq=1, temporal_aq=1).run())
             elif av1:
                 # ffmpeg -h encoder=libaom-av1
                 print(colored('Encoding with experimental AV1 encoder', 'yellow'))
@@ -143,7 +145,10 @@ def main(indir, av1, outdir=None, oformat='mp4', include='*', recursive=False, g
                 # ffmpeg -h encoder=libx265
                 print(ffmpeg.input(fp).output(str(new_fp), acodec='libopus', ab='64k', vcodec='libx265', crf=22, preset='slow', map_metadata=0, movflags='use_metadata_tags').run())
             saved = os.path.getsize(fp) - os.path.getsize(new_fp)
-            assert saved > 0
+            #assert saved > 0
+            if saved <= 0:
+                print('Copying', fp, 'over', new_fp, 'because it is smaller')
+                shutil.copy2(fp, new_fp)
             total += saved
             print(colored(new_fp, 'green'), 'ready, saved', round(saved / 1024), 'KB')
         print('Total saved', round(total / 1024 / 1024), 'MB')
