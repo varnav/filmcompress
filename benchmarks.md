@@ -93,7 +93,7 @@ VMAF score: 97.851470
 
 ## Conclusion
 
-I understand - this is a very limited benchmark. But in my case NVENC produced slightly larger file with slightly better quality (basically, quality equal to software encoding), while transcoding was 12x faster.
+I understand - this is a very limited benchmark. But in my case NVENC has shown very good compression results in both size and quality, while transcoding was 12x faster.
 Most likely pre-Turing cards will produce worse quality results.  
 Intel hardware encoder also performed well.
 
