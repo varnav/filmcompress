@@ -12,7 +12,7 @@ from termcolor import colored
 # pip install ffmpeg-python
 import ffmpeg
 
-__version__ = '0.5.1'
+__version__ = '0.6.0'
 SUPPORTED_FORMATS = ['mp4', 'mov', 'm4a', 'mkv', 'webm', 'avi', '3gp']
 SKIPPED_CODECS = ['hevc', 'av1']
 
@@ -46,7 +46,7 @@ def search_files(dirpath: str, recursive: bool) -> Iterable[str]:
 @click.option('-f', '--oformat', help="Output file format, mp4 is default", default='mp4')
 @click.option('-r', '--recursive', is_flag=True, help='Recursive')
 @click.option('-o', '--overwrite', is_flag=True, help='Overwrite old file with optimized file')
-@click.option('--av1', help='AV1 codec (experimental)', type=click.Choice(['aom', 'svt', 'rav1e'], case_sensitive=False))
+@click.option('--av1', help='AV1 codec (experimental)', type=click.Choice(['aom', 'svt', 'rav1e', 'amf'], case_sensitive=False))
 @click.option('-g', '--gpu', type=click.Choice(['nvidia', 'intel', 'amd', 'none'], case_sensitive=False), help='Use GPU of type. Can be: nvidia, intel, amd. Defaults to none (recommended).')
 @click.option('-i', '--include', default='*')
 @click.option('-n', '--notranscode', is_flag=True, help='Skip any transcoding, good with Roku mode')
@@ -128,18 +128,25 @@ def main(indir, av1, outdir=None, oformat='mp4', include='*', recursive=False, o
                 # ffmpeg -h encoder=hevc_nvenc
                 #print(ffmpeg.input(fp).output(str(new_fp), acodec='copy', map=0, vcodec='hevc_nvenc', **{'rc-lookahead': 25}, map_metadata=0, movflags='use_metadata_tags', preset='p6', spatial_aq=1, temporal_aq=1).run())
                 print(ffmpeg.input(fp).output(str(new_fp), vcodec='hevc_nvenc', **{'rc-lookahead': 25}, map_metadata=0, movflags='use_metadata_tags', preset='p6', spatial_aq=1, temporal_aq=1).run())
+            if os.name == 'nt' and gpu == 'amd':
+                print(colored('Encoding with AMD hardware acceleration', 'red'))
+                print(ffmpeg.input(fp).output(str(new_fp), vcodec='hevc_amf', map_metadata=0, movflags='use_metadata_tags', quality='balanced', usage='high_quality').run())
             elif av1:
                 # ffmpeg -h encoder=libaom-av1
                 print(colored('Encoding with experimental AV1 encoder', 'yellow'))
                 print('AV 1 codec:', colored(av1, 'yellow'))
                 if av1 == 'aom':
-                    ffmpeg.input(fp).output(str(new_fp), pix_fmt='yuv420p', acodec='libopus', ab='96k', vcodec='libaom-av1', map_metadata=0, movflags='use_metadata_tags', crf=28, preset='slow').run()
+                    ffmpeg.input(fp).output(str(new_fp), pix_fmt='yuv420p', acodec='libopus', ab='96k', vcodec='libaom-av1', map_metadata=0, movflags='use_metadata_tags', crf=28).run()
                 elif av1 == 'svt':
                     # ffmpeg -h encoder=libsvtav1
                     ffmpeg.input(fp).output(str(new_fp), pix_fmt='yuv420p', acodec='libopus', ab='96k', vcodec='libsvtav1', qp=35, preset=5, map_metadata=0, movflags='use_metadata_tags').run()
                 elif av1 == 'rav1e':
                     print('Rav1e not yet supported')
                     exit(0)
+                elif av1 == 'amf':
+                    # AMD hardware encoder
+                    # ffmpeg -h encoder=av1_amf
+                    ffmpeg.input(fp).output(str(new_fp), pix_fmt='yuv420p', acodec='libopus', ab='96k', vcodec='av1_amf', usage='lowlatency', map_metadata=0, movflags='use_metadata_tags').run()
             else:
                 print(colored('Encoding with no hardware acceleration', 'yellow'))
                 # CRF 22 rationale: https://codecalamity.com/encoding-uhd-4k-hdr10-videos-with-ffmpeg/

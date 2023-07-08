@@ -43,8 +43,7 @@ See [benchmarks](benchmarks.md).
 
 ## About AV1
 
-Supports experimental av1 encoding with `--av1`. Any `--gpu` setting will be ignored. Encoding is slow (hundreds of
-times slower than GPU HEVC), but will produce ~20% smaller file with same quality. Sound will be transcoded to 96K Opus with this option.
+Supports experimental av1 encoding with `--av1`. Any `--gpu` setting will be ignored. You may use `amf` as codec for AMD hardware support with 7xxx series Radeon and above. CPU Encoding is slow (hundreds of times slower than GPU HEVC), but will produce ~20% smaller file with same quality. Sound will be transcoded to 96K Opus with this option.
 
 ## About FFmpeg
 
