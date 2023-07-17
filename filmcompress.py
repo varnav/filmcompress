@@ -121,16 +121,16 @@ def main(indir, av1, outdir=None, oformat='mp4', include='*', recursive=False, o
             if os.path.exists(new_fp):
                 print(colored(str(new_fp) + ' exists', 'yellow'))
                 continue
-            if os.name == 'nt' and gpu == 'nvidia':
+            if gpu == 'nvidia':
                 print(colored('Encoding with nVidia hardware acceleration', 'yellow'))
                 # https://slhck.info/video/2017/03/01/rate-control.html
                 # https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/
                 # ffmpeg -h encoder=hevc_nvenc
                 #print(ffmpeg.input(fp).output(str(new_fp), acodec='copy', map=0, vcodec='hevc_nvenc', **{'rc-lookahead': 25}, map_metadata=0, movflags='use_metadata_tags', preset='p6', spatial_aq=1, temporal_aq=1).run())
                 print(ffmpeg.input(fp).output(str(new_fp), vcodec='hevc_nvenc', **{'rc-lookahead': 25}, map_metadata=0, movflags='use_metadata_tags', preset='p6', spatial_aq=1, temporal_aq=1).run())
-            if os.name == 'nt' and gpu == 'amd':
+            if gpu == 'amd':
                 print(colored('Encoding with AMD hardware acceleration', 'red'))
-                print(ffmpeg.input(fp).output(str(new_fp), vcodec='hevc_amf', map_metadata=0, movflags='use_metadata_tags', quality='balanced', usage='high_quality').run())
+                print(ffmpeg.input(fp).output(str(new_fp), vcodec='hevc_amf', map_metadata=0, movflags='use_metadata_tags', quality='balanced', usage='lowlatency', rc="cqp").run())
             elif av1:
                 # ffmpeg -h encoder=libaom-av1
                 print(colored('Encoding with experimental AV1 encoder', 'yellow'))
